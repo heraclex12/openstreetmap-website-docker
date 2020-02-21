@@ -8,8 +8,8 @@
 # <https://github.com/openstreetmap/openstreetmap-website/blob/master/INSTALL.md>.
 #
 
-FROM phusion/baseimage:0.9.8
-MAINTAINER Homme Zwaagstra <hrz@geodata.soton.ac.uk>
+FROM phusion/baseimage:latest
+MAINTAINER Hieu Tran <tthieu22.06@gmail.com>
 
 # Set the locale. This affects the encoding of the Postgresql template
 # databases.
@@ -18,6 +18,12 @@ RUN update-locale LANG=C.UTF-8
 
 # Install Osmosis. Shouldn't need to be altered so put it here to make
 # rebuilding quicker.
+
+
+RUN useradd -m docker && echo "docker:docker" | chpasswd && adduser docker sudo
+
+USER docker
+
 RUN apt-get update -y
 ADD install-osmosis.sh /tmp/
 RUN sh /tmp/install-osmosis.sh
@@ -30,12 +36,12 @@ RUN sh /tmp/install-java.sh
 ENV RAILS_ENV production
 
 # Install the openstreetmap-website dependencies
-RUN apt-get install -y ruby1.9.1 libruby1.9.1 ruby1.9.1-dev ri1.9.1 \
+RUN apt-get install -y ruby2.5 libruby2.5 ruby2.5-dev ri2.5 \
                      libmagickwand-dev libxml2-dev libxslt1-dev nodejs \
                      apache2 apache2-threaded-dev build-essential \
                      postgresql postgresql-contrib libpq-dev postgresql-server-dev-all \
                      libsasl2-dev sudo
-RUN gem1.9.1 install bundle
+RUN gem2.5 install bundle
 
 # Get the `openstreetmap-website` code
 RUN cd /tmp && \
